@@ -12,7 +12,7 @@ LDFLAGS = -m elf_x86_64 -nostdlib -z max-page-size=0x1000 -T arch/x86_64/linker.
 
 all: build/kernel.bin
 
-build/kernel.o: arch/x86_64/kernel/kernel.c arch/x86_64/include/video.h
+build/kernel.o: arch/x86_64/kernel/kernel.c arch/x86_64/include/video.h arch/x86_64/include/terminal.h
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -20,7 +20,11 @@ build/video.o: arch/x86_64/drivers/video.c arch/x86_64/include/video.h
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c $< -o $@
 
-build/kernel.bin: build/kernel.o build/video.o
+build/terminal.o: arch/x86_64/drivers/terminal.c arch/x86_64/include/terminal.h
+	@mkdir -p build
+	$(CC) $(CFLAGS) -c $< -o $@
+
+build/kernel.bin: build/kernel.o build/video.o build/terminal.o
 	$(LD) $(LDFLAGS) $^ -o $@
 
 iso: build/kernel.bin
